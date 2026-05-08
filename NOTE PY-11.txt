@@ -1,0 +1,50 @@
+from datetime import datetime, timedelta
+
+def date_operations():
+    date_str = "2024-03-24 10:30:00"
+    date_obj = datetime.strptime(date_str, "%Y-%m-%d %H:%M:%S")
+    print(f"1. String converted to date object: {date_obj}")
+
+
+    t1 = datetime(2024, 3, 24, 12, 0, 0)
+    t2 = datetime(2024, 3, 24, 14, 30, 0)
+    diff_seconds = (t2 - t1).total_seconds()
+    print(f"2. Difference between timestamps: {diff_seconds} seconds")
+
+    now = datetime.now()
+    current_info = now.strftime("%Y-%m-%d %H:%M:%S")
+    weekday_name = now.strftime("%A")
+    print(f"3. Current Date/Time: {current_info}, Day: {weekday_name}")
+
+    given_date = datetime(2024, 1, 1)
+    added_date = given_date + timedelta(days=10)
+    subtracted_date = given_date - timedelta(days=5)
+    print(f"4. Jan 1st + 10 days: {added_date.date()}")
+    print(f"   Jan 1st - 5 days: {subtracted_date.date()}")
+
+    def count_weekends(start, end):
+        count = 0
+        current = start
+        while current <= end:
+            if current.weekday() >= 5:
+                count += 1
+            current += timedelta(days=1)
+        return count
+
+    start_range = datetime(2024, 3, 1)
+    end_range = datetime(2024, 3, 31)
+    weekends = count_weekends(start_range, end_range)
+    print(f"5. Number of weekends in March 2024: {weekends}")
+
+if __name__ == "__main__":
+    date_operations()
+
+OUTPUT:
+
+1. String converted to date object: 2024-03-24 10:30:00
+2. Difference between timestamps: 9000.0 seconds
+3. Current Date/Time: 2026-03-24 04:25:05, Weekday: Tuesday
+4. Jan 1st + 10 days: 2024-01-11
+   Jan 1st - 5 days: 2023-12-27
+5. Number of weekend days (Sat/Sun) in March 2024: 10
+
