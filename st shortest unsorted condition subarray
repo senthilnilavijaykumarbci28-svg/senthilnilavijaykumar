@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int findUnsortedSubarray(vector<int>& nums) {
+        int n = nums.size();
+        int start = -1;
+        int end = -2; // Initialized so that if already sorted, end - start + 1 = 0
+        
+        int maxVal = INT_MIN;
+        int minVal = INT_MAX;
+        
+        // Single pass scanning from both ends
+        for (int i = 0; i < n; i++) {
+            // Left-to-right pass to find the right boundary
+            maxVal = max(maxVal, nums[i]);
+            if (nums[i] < maxVal) {
+                end = i;
+            }
+            
+            // Right-to-left pass to find the left boundary
+            int rightIdx = n - 1 - i;
+            minVal = min(minVal, nums[rightIdx]);
+            if (nums[rightIdx] > minVal) {
+                start = rightIdx;
+            }
+        }
+        
+        return end - start + 1;
+    }
+};
