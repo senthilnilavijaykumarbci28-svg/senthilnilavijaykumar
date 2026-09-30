@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int lengthLongestPath(string input) {
+        stringstream ss(input);
+        string line;
+        
+        vector<int> pathLengths; 
+        int maxPathLen = 0;
+        
+        while (getline(ss, line, '\n')) {
+            int depth = 0;
+            
+            while (depth < line.length() && line[depth] == '\t') {
+                depth++;
+            }
+            
+            
+            string name = line.substr(depth);
+        
+            if (pathLengths.size() <= depth) {
+                pathLengths.resize(depth + 1);
+            }
+            
+            
+            int parentLen = (depth == 0) ? 0 : pathLengths[depth - 1];
+            pathLengths[depth] = parentLen + name.length();
+            
+
+            if (name.find('.') != string::npos) {
+                
+                int currentFullPathLen = pathLengths[depth] + depth; 
+                maxPathLen = max(maxPathLen, currentFullPathLen);
+            }
+        }
+        
+        return maxPathLen;
+    }
+};
