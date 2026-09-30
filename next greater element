@@ -1,0 +1,31 @@
+lass Solution {
+public:
+    vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
+        unordered_map<int, int> nextGreater;
+        stack<int> st;
+        
+        // Step 1: Preprocess nums2 using a monotonic stack
+        for (int num : nums2) {
+            // While the current number is greater than the stack's top element
+            while (!st.empty() && num > st.top()) {
+                nextGreater[st.top()] = num; // Record the mapping
+                st.pop();
+            }
+            st.push(num);
+        }
+        
+        // Elements remaining in the stack have no next greater element
+        while (!st.empty()) {
+            nextGreater[st.top()] = -1;
+            st.pop();
+        }
+        
+        // Step 2: Build the result for nums1 using O(1) map lookups
+        vector<int> ans;
+        for (int num : nums1) {
+            ans.push_back(nextGreater[num]);
+        }
+        
+        return ans;
+    }
+};
