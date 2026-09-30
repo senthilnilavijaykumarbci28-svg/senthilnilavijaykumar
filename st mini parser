@@ -1,0 +1,43 @@
+class Solution {
+public:
+    NestedInteger deserialize(string s) {
+        if (s.empty()) return NestedInteger();
+        
+        
+        if (s[0] != '[') {
+            return NestedInteger(stoi(s));
+        }
+        
+        stack<NestedInteger> st;
+        string numStr = "";
+        
+        
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s[i];
+            
+            if (ch == '[') {
+                
+                st.push(NestedInteger());
+            } 
+            else if (ch == '-' || isdigit(ch)) {
+                numStr += ch;
+            } 
+            else if (ch == ',' || ch == ']') {
+                
+                if (!numStr.empty()) {
+                    st.top().add(NestedInteger(stoi(numStr)));
+                    numStr = "";
+                }
+                
+                
+                if (ch == ']' && st.size() > 1) {
+                    NestedInteger completedList = st.top();
+                    st.pop();
+                    st.top().add(completedList);
+                }
+            }
+        }
+        
+        return st.top();
+    }
+};
