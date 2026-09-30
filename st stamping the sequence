@@ -1,0 +1,69 @@
+#include <vector>
+#include <string>
+#include <algorithm>
+
+class Solution {
+private:
+    // Helper function to check if the stamp matches target at index 'start'
+    // '?' acts as a wildcard that matches any character
+    bool canUnstamp(const std::string& stamp, const std::string& target, int start) {
+        bool hasNonWildcard = false;
+        for (int i = 0; i < stamp.length(); i++) {
+            if (target[start + i] != '?') {
+                if (target[start + i] != stamp[i]) {
+                    return false; // Character mismatch
+                }
+                hasNonWildcard = true; // Found at least one real matching character
+            }
+        }
+        // If the window is already completely filled with '?', staging it again is redundant
+        return hasNonWildcard;
+    }
+
+    // Helper function to turn a matching target window into wildcards '?'
+    int unstamp(std::string& target, int start, int len) {
+        int count = 0;
+        for (int i = 0; i < len; i++) {
+            if (target[start + i] != '?') {
+                target[start + i] = '?';
+                count++;
+            }
+        }
+        return count; // Return how many new '?' characters were created
+    }
+
+public:
+    std::vector<int> movesToStamp(std::string stamp, std::string target) {
+        std::vector<int> res;
+        int m = stamp.length();
+        int n = target.length();
+        int totalStars = 0;
+        std::vector<bool> visited(n - m + 1, false);
+
+        // Keep searching for match windows until no more conversions can be made
+        bool progress = true;
+        while (totalStars < n && progress) {
+            progress = false;
+            
+            // Loop through all possible starting indexes for a stamp placement
+            for (int i = 0; i <= n - m; i++) {
+                if (!visited[i] && canUnstamp(stamp, target, i)) {
+                    totalStars += unstamp(target, i, m);
+                    res.push_back(i);
+                    visited[i] = true;
+                    progress = true;
+                    
+                    if (totalStars == n) break;
+                }
+            }
+        }
+
+        // If the entire target string was converted to '?', a valid sequence exists
+        if (totalStars == n) {
+            std::reverse(res.begin(), res.end()); // Reverse to get chronological order
+            return res;
+        }
+        
+        return {}; // Return empty array if impossible
+    }
+};
