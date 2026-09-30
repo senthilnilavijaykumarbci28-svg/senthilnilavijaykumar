@@ -1,0 +1,39 @@
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int trap(vector<int>& height) {
+        if (height.empty()) return 0;
+        
+        int left = 0;
+        int right = height.size() - 1;
+        
+        int left_max = 0;
+        int right_max = 0;
+        int total_water = 0;
+        
+        while (left < right) {
+            // Process from the side that has the lower bounding wall constraint
+            if (height[left] < height[right]) {
+                if (height[left] >= left_max) {
+                    left_max = height[left]; // Update new left maximum wall
+                } else {
+                    total_water += (left_max - height[left]); // Trap water above current bar
+                }
+                left++;
+            } else {
+                if (height[right] >= right_max) {
+                    right_max = height[right]; // Update new right maximum wall
+                } else {
+                    total_water += (right_max - height[right]); // Trap water above current bar
+                }
+                right--;
+            }
+        }
+        
+        return total_water;
+    }
+};
