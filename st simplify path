@@ -1,0 +1,42 @@
+#include <string>
+#include <vector>
+#include <sstream>
+
+using namespace std;
+
+class Solution {
+public:
+    string simplifyPath(string path) {
+        // Use a vector to act as a stack so we can easily iterate from bottom to top later
+        vector<string> dirStack;
+        stringstream ss(path);
+        string token;
+        
+        // 1. Split and parse the path using '/' as a delimiter
+        while (getline(ss, token, '/')) {
+            // Skip empty tokens (caused by '//') or single periods '.'
+            if (token == "" || token == ".") {
+                continue;
+            }
+            // Go up one directory level if '..' is encountered
+            if (token == "..") {
+                if (!dirStack.empty()) {
+                    dirStack.pop_back();
+                }
+            } 
+            // Valid folder name (including edge cases like '...')
+            else {
+                dirStack.push_back(token);
+            }
+        }
+        
+        // 2. Reconstruct the canonical path from the folder stack
+        string canonicalPath = "";
+        for (const string& dir : dirStack) {
+            canonicalPath += "/" + dir;
+        }
+        
+        // If the stack was empty, we are at the root directory "/"
+        return canonicalPath.empty() ? "/" : canonicalPath;
+    }
+};
