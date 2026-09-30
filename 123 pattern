@@ -1,0 +1,30 @@
+class Solution {
+public:
+    bool find132pattern(vector<int>& nums) {
+        int n = nums.size();
+        if (n < 3) return false;
+        
+        stack<int> st; // Monotonic stack tracking candidate elements for nums_j
+        int nums_k = INT_MIN; // Tracks the largest valid value for nums_k (the '2')
+        
+        // Traverse backwards from right to left
+        for (int i = n - 1; i >= 0; i--) {
+            // If the current element is smaller than our '2', we found a 132 pattern!
+            if (nums[i] < nums_k) {
+                return true;
+            }
+            
+            // If the current element is greater than elements in the stack,
+            // it's a candidate for nums_j (the '3'). Pop smaller elements to update nums_k.
+            while (!st.empty() && nums[i] > st.top()) {
+                nums_k = st.top(); 
+                st.pop();
+            }
+            
+            // Push the current element as a candidate for nums_j
+            st.push(nums[i]);
+        }
+        
+        return false;
+    }
+};
