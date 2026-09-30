@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ans(n, -1);
+        stack<int> st; // Holds elements in a monotonic decreasing order
+        
+        // Traverse the array twice virtually from right to left
+        for (int i = 2 * n - 1; i >= 0; i--) {
+            int idx = i % n;
+            
+            // Pop elements from the stack that are less than or equal to the current element
+            while (!st.empty() && st.top() <= nums[idx]) {
+                st.pop();
+            }
+            
+            // On the first virtual pass (i < n), the top of the stack is the next greater element
+            if (i < n) {
+                if (!st.empty()) {
+                    ans[idx] = st.top();
+                }
+            }
+            
+            // Push the current element onto the stack for upcoming comparisons
+            st.push(nums[idx]);
+        }
+        
+        return ans;
+    }
+};
