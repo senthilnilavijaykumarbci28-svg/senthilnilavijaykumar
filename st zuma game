@@ -1,0 +1,89 @@
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
+#include <algorithm>
+#include <climits>
+
+using namespace std;
+
+class Solution {
+private:
+    // Helper function to remove consecutive groups of 3 or more matching balls
+    string cleanBoard(string board) {
+        bool hasChange = true;
+        while (hasChange) {
+            hasChange = false;
+            int n = board.length();
+            for (int i = 0; i < n; ) {
+                int j = i;
+                while (j < n && board[j] == board[i]) {
+                    j++;
+                }
+                // If 3 or more consecutive identical balls are found, eliminate them
+                if (j - i >= 3) {
+                    board.erase(i, j - i);
+                    hasChange = true;
+                    break; 
+                }
+                i = j;
+            }
+        }
+        return board;
+    }
+
+    // Hash function to compress tracking states in our memoization cache map
+    unordered_map<string, int> memo;
+
+    int dfs(string board, string hand) {
+        board = cleanBoard(board);
+        if (board.empty()) return 0;
+        if (hand.empty()) return 1e9; // Sentinel value representing failure
+
+        string stateKey = board + "#" + hand;
+        if (memo.count(stateKey)) return memo[stateKey];
+
+        int minSteps = 1e9;
+
+        // Try inserting every unique ball choice from hand into every possible slot on the board
+        for (int i = 0; i < hand.length(); i++) {
+            // Skip duplicate characters in hand to avoid redundant state branches
+            if (i > 0 && hand[i] == hand[i - 1]) continue;
+
+            char ball = hand[i];
+            string remainingHand = hand.substr(0, i) + hand.substr(i + 1);
+
+            for (int j = 0; j <= board.length(); j++) {
+                // Pruning optimization: only insert when it makes thematic sense
+                // 1. Next to a ball of the same color
+                // 2. In between two different balls where it might trigger a split-join combo later
+                bool shouldInsert = false;
+                if (j > 0 && board[j - 1] == ball) shouldInsert = true;
+                if (j < board.length() && board[j] == ball) shouldInsert = true;
+                if (j > 0 && j < board.length() && board[j - 1] != board[j]) shouldInsert = true;
+
+                if (!shouldInsert) continue;
+
+                // Perform the insertion simulation step
+                string nextBoard = board.substr(0, j) + ball + board.substr(j);
+                
+                int steps = dfs(nextBoard, remainingHand);
+                if (steps != 1e9) {
+                    minSteps = min(minSteps, 1 + steps);
+                }
+            }
+        }
+
+        return memo[stateKey] = minSteps;
+    }
+
+public:
+    int findMinStep(string board, string hand) {
+        // Sorting helps skip identical characters in the hand easily during iteration branches
+        sort(hand.begin(), hand.end());
+        memo.clear();
+        
+        int result = dfs(board, hand);
+        return result >= 1e9 ? -1 : result;
+    }
+};
